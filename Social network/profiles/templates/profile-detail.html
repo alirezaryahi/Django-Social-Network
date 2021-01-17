@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <style>
+        .text-center {
+            text-align: center;
+        }
+
+        .width {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    Profile detail
+{% endblock %}
+
+
+{% block content %}
+    <div class="ui grid">
+        <div class="row">
+            <div class="four wide column">
+                <img src="{{ profile.avatar.url }}" class="image ui rounded medium">
+                <h1 class="text-center">{{ profile.user }}</h1>
+                <div class="ui vertical fluid menu">
+                    <div class="item">
+                        Posts
+                        <div class="ui label">{{ profile.post_num }}</div>
+                    </div>
+                    <div class="item">
+                        Get Likes
+                        <div class="ui label">{{ profile.recieve_like }}</div>
+                    </div>
+                    <div class="item">
+                        Given Likes
+                        <div class="ui label">{{ given_like }}</div>
+                    </div>
+                    <div class="item">
+                        Friends
+                        <div class="ui label">{{ profile.get_friends_num }}</div>
+                    </div>
+                    {% if profile.user not in rel_recciever and profile.user not in rel_sender and profile.user not in my_profile.friends.all %}
+                        <form action="{% url 'send-request' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                            <button type="submit" class="ui positive basic button mt-10 width"><i
+                                    class="plus square icon"></i>Send request ...
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if profile.user in rel_recciever and profile.user not in my_profile.friends.all %}
+                        <br>
+                        <button class="ui disabled button mt-10 width"><i class="user icon"></i>
+                            Waiting for approval ...
+                        </button>
+                    {% endif %}
+                    {% if profile.user in my_profile.friends.all %}
+                        <form action="{% url 'remove-friend' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                            <button type="submit" class="ui negative basic button mt-10 width"><i
+                                    class="minus square icon"></i>Remove from friends ...
+                            </button>
+                        </form>
+                    {% endif %}
+                    {% if profile.user in rel_sender and profile.user not in my_profile.friends.all %}
+                        <form action="{% url 'accept-request' %}" method="post" class="mt-10 width">
+                            {% csrf_token %}
+                            <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                            <button class="ui positive basic button width">
+                                <i class="check icon"></i>
+                                Accept invite
+                            </button>
+                        </form>
+                        <form action="{% url 'deny-request' %}" method="post" class="mt-10">
+                            {% csrf_token %}
+                            <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                            <button class="ui negative basic button mt-10 width">
+                                <i class="close icon"></i>
+                                Reject invite
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="twelve wide column">
+                {% if not profile.post_num %}
+                    <h1>No Post Yet</h1>
+                {% else %}
+                    {% for post in profile.get_posts %}
+                        <div class="ui segment fluid">
+                            {{ post.content }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

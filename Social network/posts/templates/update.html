@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <style>
+    .mt-5{
+        margin-top: 5px !important;
+    }
+    </style>
+{% endblock %}
+
+{% block title %}
+    updatePost
+{% endblock %}
+
+
+{% block content %}
+    <div class="ui segment">
+        <h3>Update post</h3>
+        <form action="" method="post" enctype="multipart/form-data" class="ui form">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="ui button primary mt-5">Update</button>
+        </form>
+    </div>
+{% endblock %}

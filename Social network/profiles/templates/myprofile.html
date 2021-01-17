@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+
+
+{% block style %}
+    <style>
+        .mymodal {
+            height: 300px !important;
+            top: 200px !important;
+            font-size: 20px !important;
+        }
+
+        .mt-3 {
+            margin-top: 20px;
+        }
+    .ui .header{
+        font-size: 18px !important;
+    }
+    </style>
+{% endblock %}
+
+{% block title %}
+    My Profile
+{% endblock title %}
+
+
+{% block content %}
+    <div class="ui modal mymodal">
+        <i class="close icon"></i>
+        <div class="header">
+            Update your profile
+        </div>
+        <div class="image content">
+            <div class="ui medium image">
+                <img src="{{ profile.avatar.url }}" width="200" height="200">
+            </div>
+            <div class="description">
+                <div class="ui header">Provide some additional/newest info about you</div>
+                <form action="" method="post" class="ui form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="actions">
+                        <button type="submit" class="ui positive right labeled icon button">
+                            Update
+                            <i class="checkmark icon"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="ui segment">
+        {% if confirm %}
+            <div class="ui green message">Your Profile has been updated</div>
+        {% endif %}
+        <h3>My Profile : {{ user }}</h3>
+        <div class="ui grid">
+            <div class="row">
+                <div class="six wide column">
+                    <img src="{{ profile.avatar.url }}" width="300" height="300">
+                    <div class="row mt-3">
+                        <button class="ui secondary  button" id="modal-btn">Update your Profile</button>
+                    </div>
+                </div>
+                <div class="ten wide column">
+                    <table class="ui table">
+                        <tbody>
+                        <tr>
+                            <td>FirstName :</td>
+                            <td>{{ profile.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>LastName :</td>
+                            <td>{{ profile.last_name }}</td>
+                        </tr>
+                        <tr class="bio-height">
+                            <td>Bio :</td>
+                            <td>{{ profile.bio }}</td>
+                        </tr>
+                        <tr>
+                            <td>Country :</td>
+                            <td>{{ profile.country }}</td>
+                        </tr>
+                        <tr>
+                            <td>Email :</td>
+                            <td>{{ profile.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Number Of Friends :</td>
+                            <td>{{ profile.get_friends_num }}</td>
+                        </tr>
+                        <tr>
+                            <td>Friends :</td>
+                            <td>
+                                <ul>
+                                    {% for friend in profile.get_friends %}
+                                        <li>{{ friend }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Number Of Posts :</td>
+                            <td>{{ profile.post_num }}</td>
+                        </tr>
+                        <tr>
+                            <td>Posts Like :</td>
+                            <td>{{ given_like }}</td>
+                        </tr>
+                        <tr>
+                            <td>Get Like :</td>
+                            <td>{{ profile.recieve_like }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function () {
+            $('#modal-btn').click(function () {
+                $('.ui.modal')
+                    .modal('show')
+                ;
+            })
+        })
+    </script>
+{% endblock scripts %}

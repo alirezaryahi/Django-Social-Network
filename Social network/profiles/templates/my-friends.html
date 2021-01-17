@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <style>
+        .pr-20 {
+            padding-right: 100px;
+        }
+
+        .pl-20 {
+            padding-left: 100px;
+        }
+
+        .mt-10 {
+            margin-top: 10px !important;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    My friends
+{% endblock %}
+
+{% block content %}
+    <div class="pl-20 pr-20">
+        {% if is_empty %}
+            <h1>No profiles to interact with</h1>
+        {% else %}
+            {% for profile in my_friends %}
+                <div class="ui segment">
+                    <div class="ui grid">
+                        <div class="row pr-20 pl-20">
+                            <div class="three wide column">
+                                <img src="{{ profile.avatar.url }}" class="ui small circular image">
+                            </div>
+                            <div class="thirteen wide column">
+                                <h3>{{ profile.user }}</h3>
+                                <p>{{ profile.bio }}</p>
+                                <a href="/profiles/{{ profile.slug }}/">
+                                    <button class="ui primary button">See profile</button>
+                                </a>
+                                {% if profile.user not in rel_recciever and profile.user not in rel_sender %}
+                                    <form action="{% url 'send-request' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                        <button type="submit" class="ui positive basic button mt-10"><i
+                                                class="plus square icon"></i>Send request ...
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                {% if profile.user not in rel_recciever and profile.user in rel_sender and request.user not in profile.friends.all %}
+                                    <form action="{% url 'send-request' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                        <button type="submit" class="ui positive basic button mt-10"><i
+                                                class="plus square icon"></i>Send request ...
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                {% if profile.user in rel_recciever and profile.user not in profile.friends.all %}
+                                    <br>
+                                    <button class="ui disabled button mt-10"><i class="user icon"></i>
+                                        Waiting for approval ...
+                                    </button>
+                                {% endif %}
+                                {% if request.user in profile.friends.all %}
+                                    <form action="{% url 'remove-friend' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                        <button type="submit" class="ui negative basic button mt-10"><i
+                                                class="minus square icon"></i>Remove from friends ...
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% endif %}
+    </div>
+{% endblock %}

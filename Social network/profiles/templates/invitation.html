@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <style>
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .width {
+            width: 150px;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    invite recieved
+{% endblock %}
+
+
+{% block content %}
+    {% if is_empty %}
+        <h1>You have no friend requests</h1>
+    {% else %}
+        {% for item in qs %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="three wide column">
+                            <img src="{{ item.avatar.url }}" class="ui medium rounded image">
+                        </div>
+                        <div class="thirteen wide column">
+                            <h3>{{ item.user }}</h3>
+                            <p>{{ item.bio }}</p>
+                            <br>
+                            <a class="mt-10" href="">
+                                <a href="/profiles/{{ item.slug }}/"><button class="ui primary button width">See profile</button></a>
+                            </a>
+                            <form action="{% url 'accept-request' %}" method="post" class="mt-10">
+                                {% csrf_token %}
+                                <input type="hidden" name="profile_id" value="{{ item.id }}">
+                                <button class="ui positive basic button width">
+                                    <i class="check icon"></i>
+                                    Accept invite
+                                </button>
+                            </form>
+                            <form action="{% url 'deny-request' %}" method="post" class="mt-10">
+                                {% csrf_token %}
+                                <input type="hidden" name="profile_id" value="{{ item.id }}">
+                                <button class="ui negative basic button mt-10 width">
+                                    <i class="close icon"></i>
+                                    Reject invite
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}
